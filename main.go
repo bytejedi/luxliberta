@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -23,7 +22,7 @@ import (
 )
 
 var (
-	version   = "v0.5.0"
+	version   = "v0.5.1"
 	gitCommit = "unknown"
 	buildTime = "unknown"
 )
@@ -137,21 +136,25 @@ func main() {
 	configFile := os.Args[1]
 	data, err := os.ReadFile(configFile)
 	if err != nil {
-		log.Fatalf("Failed to read config file: %v", err)
+		slog.Error("Failed to read config file", "error", err)
+		os.Exit(1)
 	}
 
 	if err := json.Unmarshal(data, &config); err != nil {
-		log.Fatalf("Failed to parse config JSON: %v", err)
+		slog.Error("Failed to parse config JSON", "error", err)
+		os.Exit(1)
 	}
 
 	if config.Listen == "" || config.Path == "" || config.UUID == "" {
-		log.Fatalf("Config fields 'listen', 'path', and 'uuid' are required.")
+		slog.Error("Config fields 'listen', 'path', and 'uuid' are required.")
+		os.Exit(1)
 	}
 
 	// Normalise and parse UUID
 	parsedUUID, err := parseUUID(config.UUID)
 	if err != nil {
-		log.Fatalf("Invalid VLESS UUID: %v", err)
+		slog.Error("Invalid VLESS UUID", "error", err)
+		os.Exit(1)
 	}
 	clientUUID = parsedUUID
 
@@ -177,10 +180,11 @@ func main() {
 		MaxHeaderBytes:    4 << 10, // 4 KB
 	}
 
-	slog.Info("Starting lightweight VLESS+WS server (Mux Enabled)")
+	slog.Info("Starting LuxLiberta server (Mux Enabled)")
 
 	if err := srv.ListenAndServe(); err != nil {
-		log.Fatalf("Server failed: %v", err)
+		slog.Error("Server failed", "error", err)
+		os.Exit(1)
 	}
 }
 
