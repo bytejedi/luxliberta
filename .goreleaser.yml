@@ -27,9 +27,11 @@ builds:
     # Compilation flags matching your Makefile's LDFLAGS
     # GoReleaser automatically replaces template variables securely at build time
     ldflags:
-      - -s -w              # Strip symbols and debug info to optimize binary size
-      - -X main.gitCommit={{ .Commit }}   # Inject the 8-character short Git commit SHA
-      - -X main.buildTime={{ .Date }}     # Inject the RFC3339 formatted UTC build time
+      - -s -w                                          # Strip symbols and debug info to optimize binary size
+      - -X main.gitCommit={{ .ShortCommit }}           # Inject the short Git commit SHA
+      - -X main.buildTime={{ .Date }}                  # Inject the RFC3339 formatted UTC build time
+      - -X main.goVersion={{ .Env.BUILD_GO_VERSION }}  # Inject Go compiler version
+      - -X main.platform={{ .Os }}/{{ .Arch }}         # Inject target platform (e.g., linux/amd64)
 
 # Archive and packaging configurations
 archives:

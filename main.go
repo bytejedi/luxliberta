@@ -25,6 +25,8 @@ var (
 	version   = "v0.5.2"
 	gitCommit = "unknown"
 	buildTime = "unknown"
+	goVersion = "unknown"
+	platform  = "unknown"
 )
 
 // Config represents the simple JSON config format for our lightweight server.
@@ -115,6 +117,8 @@ func main() {
 		fmt.Printf("Version:    %s\n", version)
 		fmt.Printf("Git Commit: %s\n", gitCommit)
 		fmt.Printf("Build Time: %s\n", buildTime)
+		fmt.Printf("Go Version: %s\n", goVersion)
+		fmt.Printf("Platform:   %s\n", platform)
 		return
 	}
 
