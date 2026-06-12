@@ -3,15 +3,24 @@
 BINARY_NAME=luxliberta
 GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+GO_VERSION = $(shell go version | awk '{print $$3}')
+GOOS ?= $(shell go env GOOS)
+GOARCH ?= $(shell go env GOARCH)
+PLATFORM = $(GOOS)/$(GOARCH)
 
-LDFLAGS=-ldflags "-s -w -X main.gitCommit=${GIT_COMMIT} -X main.buildTime=${BUILD_TIME}"
+LDFLAGS=-ldflags "-s -w \
+  -X main.gitCommit=${GIT_COMMIT} \
+  -X main.buildTime=${BUILD_TIME} \
+  -X main.goVersion=${GO_VERSION} \
+  -X main.platform=${PLATFORM}"
 
 .PHONY: all build test clean
 
 all: build
 
 build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o ${BINARY_NAME}
+	@echo "Building for ${PLATFORM} with Go:${GO_VERSION}..."
+	CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build ${LDFLAGS} -o ${BINARY_NAME}
 
 test:
 	go test -v ./...

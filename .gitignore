@@ -11,5 +11,5 @@
 *.tar.gz
 *.dat
 
-luxliberta
+/luxliberta
 dist

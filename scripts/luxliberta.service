@@ -1,0 +1,31 @@
+# /lib/systemd/system/luxliberta.service
+[Unit]
+Description=LuxLiberta Service
+After=network.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+User=nobody
+WorkingDirectory=/data/luxliberta/
+
+# Network Capabilities Retention (Granted to the 'nobody' user)
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+
+ExecStart=/data/luxliberta/luxliberta ./config.json
+
+Restart=on-failure
+RestartSec=5s
+StartLimitIntervalSec=20s
+StartLimitBurst=5
+
+# Advanced Systemd Sandboxing (Further restricts 'nobody' to prevent lateral movement)
+ProtectSystem=strict
+ProtectHome=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+
+[Install]
+WantedBy=multi-user.target
